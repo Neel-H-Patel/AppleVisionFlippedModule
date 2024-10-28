@@ -9,10 +9,20 @@ import UIKit
 import AVKit
 import Vision
 
+// MARK: Team Members
+// Neel Patel
+// Adeel Allawala
+
 class ViewController: UIViewController {
     
     // Main view for showing camera content.
     @IBOutlet weak var previewView: UIView?
+    
+    // our slider showing the gaze direction
+    @IBOutlet weak var gazeSlider: UISlider!
+    
+    // to track if someone is blinking
+    @IBOutlet weak var blinkingLabel: UILabel!
     
     // AVCapture variables to hold sequence data
     var session: AVCaptureSession?
@@ -319,6 +329,10 @@ class ViewController: UIViewController {
         }
     }
     
+    // MARK: Variables to track Eye Movement
+    private var leftEyeX: (min:Float, max:Float) = (100, 0)
+    private var leftEyeY: (min:Float, max:Float) = (100, 0)
+    private var isBlinking: Bool = false
     
     // Interpret the output of our facial landmark detector
     // this code is called upon succesful completion of landmark detection
@@ -332,6 +346,77 @@ class ViewController: UIViewController {
         guard let landmarksRequest = request as? VNDetectFaceLandmarksRequest,
               let results = landmarksRequest.results as? [VNFaceObservation] else {
             return
+        }
+        
+        // MARK: Normalized Points Definition
+        // The normalizedPoints property of a landmark on an observation in VNFaceObservation is the position of landmark points relative to the whole face. For us, we will be using the left eye to demonstrate blinking and gaze detection working properly.
+        
+        for observation in results {
+        
+            if let landmarks = observation.landmarks {
+                if let lePoints = landmarks.leftEye?.normalizedPoints {
+                    // finds the minimum and maximum values in the y direction for the left eye
+                    let minY = lePoints.min { a, b in a.y < b.y }
+                    let maxY = lePoints.max { a, b in a.y < b.y }
+                    let minX = lePoints.min { a, b in a.x < b.x }
+                    let maxX = lePoints.max { a, b in a.x < b.x }
+                    
+                    // if the min or max is a greater magnitude than the current highest min or max, replace that value with the highest min or max in our tuples
+                    if Float(minY!.y) < leftEyeY.min{
+                        leftEyeY.min = Float(minY!.y)
+                    }
+                    if Float(maxY!.y) > leftEyeY.max{
+                        leftEyeY.max = Float(maxY!.y)
+                    }
+                    if Float(minX!.x) < leftEyeX.min{
+                        leftEyeX.min = Float(minX!.x)
+                    }
+                    if Float(maxX!.x) > leftEyeX.max{
+                        leftEyeX.max = Float(maxX!.x)
+                    }
+                    
+                    // prints current and greatest diffs between out max and min Y values
+                    print("Current diff: \(maxY!.y-minY!.y), Greatest diff: \(leftEyeY.max - leftEyeY.min)")
+
+                    // MARK: Blink Detecting Algorithm
+                    // So the face detection is really good at calculating an accurate difference when the face is facing completely straight at the camera. However, if your face is tilted backwards or forwards and you're looking at the camera, the greatest diff value goes from about 0.11 to about 0.66, so it is very easy for this value to become inflated. One of the things that is helpful in figuring out when a user is blinking is seeing the current diff values. When my eyes are open, the values hover around 0.35 - 0.5 when I am facing directly at the camera. Whenever, I am blinking, the difference is about 0.19 - 0.27. Therefore, our solution right now is that if the current diff is below 0.3, then the person is currently blinking.
+                    
+                    if (maxY!.y-minY!.y)<0.03{
+                        isBlinking = true;
+                    } else {
+                        isBlinking = false
+                    }
+                    
+                    // update blinking label to show value of whether we are blinking or not
+                    DispatchQueue.main.async {
+                        self.blinkingLabel.text = "Blinking: " + String(self.isBlinking)
+                    }
+                    
+                    if (isBlinking) {
+                        print("Blink: \(maxY!.y-minY!.y); max diff: \(leftEyeY.max - leftEyeY.min)")
+                    } else {
+                        // MARK: Gaze Detection
+                        if let ppPoints = landmarks.leftPupil?.normalizedPoints {
+                            let minPupil = ppPoints.min { a, b in a.x < b.x }
+
+                            // normalize the gaze value to be between 0 and 1
+                            var gaze: Float = 2 * ((Float(minPupil!.x) - leftEyeX.min) / (leftEyeX.max - leftEyeX.min)) - 0.5
+                            
+                            // clamp gaze value between 0.0 and 1.0
+                            gaze = max(0.0, min(1.0, gaze))
+
+                            // update the slider on the main thread
+                            DispatchQueue.main.async {
+                                self.gazeSlider.value = gaze
+                            }
+
+                            print("Gaze: \(gaze)")
+                        }
+                        
+                        
+                    }
+                }
+            }
         }
         
         // Perform all UI updates (drawing) on the main queue, not the background queue on which this handler is being called.
