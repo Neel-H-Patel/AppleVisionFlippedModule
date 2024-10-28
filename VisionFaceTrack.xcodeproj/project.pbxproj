@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		073D7B6D2CD02E3E00A8BD2A /* TeamMembers.txt in Resources */ = {isa = PBXBuildFile; fileRef = 073D7B6C2CD02E3600A8BD2A /* TeamMembers.txt */; };
 		288FF80C206DB231000932BA /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 288FF80B206DB231000932BA /* README.md */; };
 		28C69F49204F6ACA00949F30 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28C69F48204F6ACA00949F30 /* AppDelegate.swift */; };
 		28C69F4B204F6ACA00949F30 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28C69F4A204F6ACA00949F30 /* ViewController.swift */; };
@@ -16,6 +17,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		073D7B6C2CD02E3600A8BD2A /* TeamMembers.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = TeamMembers.txt; sourceTree = "<group>"; };
 		288FF80B206DB231000932BA /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = SOURCE_ROOT; };
 		28C69F45204F6ACA00949F30 /* VisionFaceTrack.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VisionFaceTrack.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		28C69F48204F6ACA00949F30 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -71,6 +73,7 @@
 			children = (
 				28C69F48204F6ACA00949F30 /* AppDelegate.swift */,
 				28C69F4A204F6ACA00949F30 /* ViewController.swift */,
+				073D7B6C2CD02E3600A8BD2A /* TeamMembers.txt */,
 				28C69F4C204F6ACA00949F30 /* Main.storyboard */,
 				28C69F4F204F6ACA00949F30 /* Assets.xcassets */,
 				28C69F51204F6ACA00949F30 /* LaunchScreen.storyboard */,
@@ -150,6 +153,7 @@
 			files = (
 				28C69F53204F6ACA00949F30 /* LaunchScreen.storyboard in Resources */,
 				28C69F50204F6ACA00949F30 /* Assets.xcassets in Resources */,
+				073D7B6D2CD02E3E00A8BD2A /* TeamMembers.txt in Resources */,
 				288FF80C206DB231000932BA /* README.md in Resources */,
 				28C69F4E204F6ACA00949F30 /* Main.storyboard in Resources */,
 			);
